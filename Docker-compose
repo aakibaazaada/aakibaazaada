@@ -1,0 +1,33 @@
+version: '3'
+services:
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins
+    ports:
+      -  "8080:8080"
+    volumes:
+      -  "$PWD/jenkins_home:/var/jenkins_home"
+    networks:
+      - net
+  remote_host:
+    container_name: remote-host
+    image: remote-host
+    build:
+      context: ../docker_files/
+      dockerfile: docker_file
+    networks:
+      - net
+  git:
+    container_name: git-server
+    image: 'gitlab/gitlab-ee:latest'
+    hostname: 'gitlab.example.com'
+    ports:
+      - '8090:80'
+    volumes:
+      - '$PWD/..gitlab_installation/config:/etc/gitlab'
+      - '$PWD/..gitlab_installation/logs:/var/log/gitlab'
+      - '$PWD/..gitlab_installation/data:/var/opt/gitlab'
+    networks:
+      - net
+networks:
+  net:
